@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import ScoreGauge from "@/components/ScoreGauge";
+import CompanyLogo from "@/components/CompanyLogo";
 
 interface Company {
   id: string;
@@ -229,41 +230,12 @@ export default function RankingsPage() {
                     gap: "0.75rem",
                   }}
                 >
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: "var(--radius-sm)",
-                      background: "var(--bg-elevated)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      overflow: "hidden",
-                      flexShrink: 0,
-                      border: "1px solid var(--border-color)",
-                    }}
-                  >
-                    {company.logo_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={company.logo_url}
-                        alt={company.name}
-                        width={24}
-                        height={24}
-                        style={{ objectFit: "contain" }}
-                      />
-                    ) : (
-                      <span
-                        style={{
-                          fontFamily: "var(--font-display)",
-                          fontWeight: 700,
-                          fontSize: "0.9rem",
-                        }}
-                      >
-                        {company.name[0]}
-                      </span>
-                    )}
-                  </div>
+                  <CompanyLogo
+                    name={company.name}
+                    website={company.website}
+                    logo_url={company.logo_url}
+                    size={36}
+                  />
                   <div>
                     <div style={{ fontWeight: 500, fontSize: "0.95rem" }}>
                       {company.name}

@@ -6,6 +6,7 @@ import ScoreGauge from "@/components/ScoreGauge";
 import RiskBadge from "@/components/RiskBadge";
 import ScoreBar from "@/components/ScoreBar";
 import CategoryBreakdown from "@/components/CategoryBreakdown";
+import CompanyLogo from "@/components/CompanyLogo";
 import Link from "next/link";
 
 interface Policy {
@@ -132,41 +133,12 @@ export default function CompanyPage() {
           flexWrap: "wrap",
         }}
       >
-        <div
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: "var(--radius-lg)",
-            background: "var(--bg-elevated)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-            border: "1px solid var(--border-color)",
-            flexShrink: 0,
-          }}
-        >
-          {company.logo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={company.logo_url}
-              alt={company.name}
-              width={56}
-              height={56}
-              style={{ objectFit: "contain" }}
-            />
-          ) : (
-            <span
-              style={{
-                fontSize: "2.5rem",
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
-              }}
-            >
-              {company.name[0]}
-            </span>
-          )}
-        </div>
+        <CompanyLogo
+          name={company.name}
+          website={company.website}
+          logo_url={company.logo_url}
+          size={80}
+        />
         <div style={{ flex: 1, minWidth: "200px" }}>
           <h1 style={{ fontSize: "2.25rem", marginBottom: "0.5rem" }}>
             {company.name}

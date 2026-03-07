@@ -65,6 +65,16 @@ export async function POST(request: NextRequest) {
       .update(policyText)
       .digest("hex");
 
+    // Run AI analysis FIRST so we can extract the company category
+    const analysis = await analyzePolicy(policyText);
+    const overallScore = computeOverallScore(analysis);
+    const detectedCategory = analysis.company_category || "Technology";
+
+    // Derive website and logo from policy URL
+    const website = new URL(policy_url).origin;
+    const domain = new URL(policy_url).hostname.replace("www.", "");
+    const logo_url = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+
     // Find or create company
     const slug = company_name
       .toLowerCase()
@@ -72,16 +82,23 @@ export async function POST(request: NextRequest) {
       .replace(/(^-|-$)/g, "");
 
     let companyResult = await query(
-      "SELECT id FROM companies WHERE slug = $1",
+      "SELECT id, category FROM companies WHERE slug = $1",
       [slug],
     );
 
     if (companyResult.rows.length === 0) {
+      // Create new company with AI-detected category
       companyResult = await query(
-        `INSERT INTO companies (name, slug, website, category, overall_score)
-         VALUES ($1, $2, $3, 'Uncategorized', 5.0)
-         RETURNING id`,
-        [company_name, slug, new URL(policy_url).origin],
+        `INSERT INTO companies (name, slug, website, logo_url, category, overall_score)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id, category`,
+        [company_name, slug, website, logo_url, detectedCategory, overallScore],
+      );
+    } else if (companyResult.rows[0].category === "Uncategorized") {
+      // Update existing company that was previously uncategorized
+      await query(
+        `UPDATE companies SET category = $1, logo_url = COALESCE(logo_url, $2), website = COALESCE(website, $3) WHERE slug = $4`,
+        [detectedCategory, logo_url, website, slug],
       );
     }
 
@@ -119,11 +136,7 @@ export async function POST(request: NextRequest) {
         changed: false,
       });
     }
-
-    // Run AI analysis
-    const analysis = await analyzePolicy(policyText);
-    const overallScore = computeOverallScore(analysis);
-
+    // AI analysis was already done before company creation (for category detection)
     // Get next version number
     const versionResult = await query(
       "SELECT COALESCE(MAX(version_number), 0) + 1 as next_version FROM policy_versions WHERE policy_id = $1",

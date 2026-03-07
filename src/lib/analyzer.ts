@@ -10,6 +10,7 @@ Return ONLY valid JSON. No markdown. No backticks. No preamble. Every score fiel
 
 {
   "site_name": "Company name",
+  "company_category": "One of: Technology, Social Media, Entertainment, E-Commerce, Finance, Productivity, Messaging, Professional, Transportation, Travel, Education, Healthcare, Gaming, Food & Delivery, or Other",
   "policy_type": "Privacy Policy or Terms of Service etc",
   "overall_summary": "3-4 sentences. Be SPECIFIC. Name actual data types collected, actual third parties mentioned, actual rights the user gains or loses. Write as if explaining to a smart friend who asked what does this actually mean for me?",
   "risk_level": "low or medium or high",
@@ -30,10 +31,13 @@ Return ONLY valid JSON. No markdown. No backticks. No preamble. Every score fiel
   }
 }
 
+For company_category, determine the company's primary industry from the policy content. Use one of: Technology, Social Media, Entertainment, E-Commerce, Finance, Productivity, Messaging, Professional, Transportation, Travel, Education, Healthcare, Gaming, Food & Delivery. Only use Other if none of these categories fit.
+
 Scoring: 0-3 = user-friendly. 4-6 = average. 7-9 = concerning. 10 = extremely harmful to users.`;
 
 export interface AnalysisResult {
   site_name: string;
+  company_category: string;
   policy_type: string;
   overall_summary: string;
   risk_level: "low" | "medium" | "high";
@@ -131,6 +135,31 @@ export async function analyzePolicy(
       if (!Array.isArray(parsed.categories[cat])) {
         parsed.categories[cat] = [];
       }
+    }
+
+    // Ensure company_category is valid
+    const validCategories = [
+      "Technology",
+      "Social Media",
+      "Entertainment",
+      "E-Commerce",
+      "Finance",
+      "Productivity",
+      "Messaging",
+      "Professional",
+      "Transportation",
+      "Travel",
+      "Education",
+      "Healthcare",
+      "Gaming",
+      "Food & Delivery",
+      "Other",
+    ];
+    if (
+      !parsed.company_category ||
+      !validCategories.includes(parsed.company_category)
+    ) {
+      parsed.company_category = "Technology"; // sensible default
     }
 
     return parsed as AnalysisResult;

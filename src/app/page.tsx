@@ -1,5 +1,6 @@
 import SearchBar from "@/components/SearchBar";
 import CompanyCard from "@/components/CompanyCard";
+import RecentlyUpdatedList from "@/components/RecentlyUpdatedList";
 import { query } from "@/lib/db";
 
 interface Company {
@@ -9,6 +10,7 @@ interface Company {
   category: string;
   overall_score: number;
   logo_url: string;
+  website: string;
   policy_count: number;
   updated_at: string;
 }
@@ -221,6 +223,7 @@ export default async function HomePage() {
                   overall_score={company.overall_score}
                   policy_count={company.policy_count}
                   logo_url={company.logo_url}
+                  website={company.website}
                 />
               ))}
             </div>
@@ -233,87 +236,7 @@ export default async function HomePage() {
             <div className="section-header">
               <h2>Recently Updated</h2>
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.5rem",
-              }}
-            >
-              {recentlyUpdated.map((company) => (
-                <a
-                  key={company.slug}
-                  href={`/${company.slug}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "1rem",
-                    padding: "1rem 1.25rem",
-                    background: "var(--bg-card)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "var(--radius-md)",
-                    textDecoration: "none",
-                    color: "inherit",
-                    transition: "all var(--transition-fast)",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "var(--radius-sm)",
-                      background: "var(--bg-elevated)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontFamily: "var(--font-display)",
-                      fontWeight: 700,
-                      flexShrink: 0,
-                      overflow: "hidden",
-                      border: "1px solid var(--border-color)",
-                    }}
-                  >
-                    {company.logo_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={company.logo_url}
-                        alt={company.name}
-                        width={28}
-                        height={28}
-                        style={{ objectFit: "contain" }}
-                      />
-                    ) : (
-                      company.name[0]
-                    )}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 500 }}>{company.name}</div>
-                    <div
-                      style={{
-                        fontSize: "0.78rem",
-                        color: "var(--text-tertiary)",
-                      }}
-                    >
-                      {company.category}
-                    </div>
-                  </div>
-                  <span
-                    style={{
-                      fontFamily: "var(--font-mono)",
-                      fontWeight: 600,
-                      color: getScoreColor(company.overall_score),
-                    }}
-                  >
-                    {company.overall_score.toFixed(1)}
-                  </span>
-                  <span
-                    style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}
-                  >
-                    →
-                  </span>
-                </a>
-              ))}
-            </div>
+            <RecentlyUpdatedList companies={recentlyUpdated} />
           </section>
         )}
 

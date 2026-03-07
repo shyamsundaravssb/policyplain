@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import ScoreGauge from "./ScoreGauge";
+import CompanyLogo from "./CompanyLogo";
 
 interface CompanyCardProps {
   name: string;
@@ -10,6 +11,7 @@ interface CompanyCardProps {
   overall_score: number;
   policy_count: number;
   logo_url?: string;
+  website?: string;
 }
 
 export default function CompanyCard({
@@ -19,6 +21,7 @@ export default function CompanyCard({
   overall_score,
   policy_count,
   logo_url,
+  website,
 }: CompanyCardProps) {
   return (
     <Link href={`/${slug}`} style={{ textDecoration: "none" }}>
@@ -32,46 +35,12 @@ export default function CompanyCard({
           textAlign: "center",
         }}
       >
-        <div
-          style={{
-            width: 56,
-            height: 56,
-            borderRadius: "var(--radius-md)",
-            background: "var(--bg-elevated)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-            border: "1px solid var(--border-color)",
-          }}
-        >
-          {logo_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={logo_url}
-              alt={name}
-              width={40}
-              height={40}
-              style={{ objectFit: "contain" }}
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-                (e.target as HTMLImageElement).parentElement!.innerHTML =
-                  `<span style="font-size:1.5rem">${name[0]}</span>`;
-              }}
-            />
-          ) : (
-            <span
-              style={{
-                fontSize: "1.5rem",
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
-                color: "var(--text-secondary)",
-              }}
-            >
-              {name[0]}
-            </span>
-          )}
-        </div>
+        <CompanyLogo
+          name={name}
+          website={website}
+          logo_url={logo_url}
+          size={56}
+        />
         <div>
           <h4
             style={{
