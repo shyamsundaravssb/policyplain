@@ -3,6 +3,17 @@ import { query } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
   try {
+    // Return distinct categories if requested
+    const wantCategories = request.nextUrl.searchParams.get("categories");
+    if (wantCategories === "true") {
+      const catResult = await query(
+        `SELECT DISTINCT category FROM companies WHERE category IS NOT NULL AND category != 'Uncategorized' ORDER BY category ASC`,
+      );
+      return NextResponse.json(
+        catResult.rows.map((r: { category: string }) => r.category),
+      );
+    }
+
     const category = request.nextUrl.searchParams.get("category") || "";
     const sort = request.nextUrl.searchParams.get("sort") || "worst";
 

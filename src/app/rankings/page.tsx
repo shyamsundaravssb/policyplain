@@ -15,27 +15,28 @@ interface Company {
   policy_count: number;
 }
 
-const CATEGORIES = [
-  "All",
-  "Technology",
-  "Social Media",
-  "Entertainment",
-  "E-Commerce",
-  "Finance",
-  "Productivity",
-  "Messaging",
-  "Professional",
-  "Transportation",
-  "Travel",
-  "Education",
-  "Healthcare",
-];
-
 export default function RankingsPage() {
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [categories, setCategories] = useState<string[]>(["All"]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("All");
   const [sortOrder, setSortOrder] = useState<"worst" | "best">("worst");
+
+  // Fetch categories dynamically
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/rankings?categories=true");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setCategories(["All", ...data]);
+        }
+      } catch {
+        // Keep default
+      }
+    }
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     async function fetchRankings() {
@@ -101,7 +102,7 @@ export default function RankingsPage() {
             flexWrap: "wrap",
           }}
         >
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setCategory(cat)}
